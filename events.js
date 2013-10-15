@@ -1,9 +1,13 @@
 Cactus.Events = {
 
 	on: function(name, callback, context) {
-      if (!callback || !name){ 
+      if (!callback){ 
       		return this;
       	}
+
+      if(!name){
+        return this;
+      }
 
       if(!this._events){
       	this._events = {};
