@@ -1,7 +1,7 @@
 Cactus.Events = {
 
 	on: function(name, callback, context) {
-      if (!callback){ 
+      if (!callback || !name){ 
       		return this;
       	}
 
@@ -53,51 +53,24 @@ Cactus.Events = {
 	  	return this;
 	 	 }
 
-      var args = array.slice.call(arguments, 1);
+      var args = Array.prototype.slice.call(arguments, 1)
 
       var events = this._events[name];
 
-      var allEvents = this._events.all;
+      var allEvents = this._events['all'];
 
-      if (events) {
-      	triggerEvents(events, args);
+      if (events && events.length) {
+      	_.each(events, function(event){
+          event.callback.apply(event.context, args);
+        });
       }
 
-      if (allEvents) {
-      	triggerEvents(allEvents, arguments);
-      	}
-      	
+      if (allEvents && allevents.length) {
+      	_.each(allEvents, function(event){
+          event.callback.apply(event.context. arguments)
+        });
+      	};
+
       return this;
     },
-
-     listenTo: function(object, events, callback) {
-      var listeners = this._listeners || (this._listeners = {});
-      var id = object._listenerId || (object._listenerId = _.uniqueId('l'));
-      listeners[id] = object;
-      object.on(events, callback || this, this);
-      return this;
-    },
-
-     stopListening: function(obj, name, callback) {
-      var listeningTo = this._listeningTo;
-      if (!listeningTo) {
-      	return this;
-      }
-      var remove = !name && !callback;
-      if (!callback && typeof name === 'object') {
-      	callback = this;
-      }
-      if (obj) (listeningTo = {}){
-      	[obj._listenId] = obj;
-      }
-      for (var id in listeningTo) {
-        obj = listeningTo[id];
-        obj.off(name, callback, this);
-        if (remove || _.isEmpty(obj._events)) {
-        	delete this._listeningTo[id];
-        }
-      }
-      return this;
-    }
-
 };
