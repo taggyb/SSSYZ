@@ -17,10 +17,13 @@ if (properties && _.has(properties, 'constructor')){
 
 _.extend(child, parent); //puts all parent properties in to child
 
-child.prototype = parent.prototype;
+var Surrogate = function(){ this.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate;
 
 if(properties) //if child properties are given
 _.extend(chid.prototype, properties);
+
 
 child.__super__ = parent.prototype;
 
