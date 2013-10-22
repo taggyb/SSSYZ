@@ -1,48 +1,48 @@
 var View = Cactus.View = function(options) {
-    this.cid = _.uniqueId('view');
     if(!options){
     	options = {};
     }
-    _.extend(this, _.pick(options, viewOptions));
+    this.el = options["el"];
+    this.events = options["events"];
+    this.model = options["model"] || {};
     this.initialize.apply(this, arguments);
-    //this.delegateEvents();
   }
 
    _.extend(Cactus.View.prototype, Cactus.Events, {
 
    	initialize: function(){},
 
+      // Default render, overwrite this with own implementation
    	 render: function() {
       return this;
     },
 
     setElement: function(element, delegate) {
-      if (this.$el) this.undelegateEvents();
-      this.$el = element instanceof Backbone.$ ? element : Backbone.$(element);
+      this.$el = element;
       this.el = this.$el[0];
-      if (delegate !== false) this.delegateEvents();
-      return this;
-    },
-
-     delegateEvents: function(events) {
-      if (!(events || (events = _.result(this, 'events')))) return this;
-      this.undelegateEvents();
-      for (var key in events) {
-        var method = events[key];
-        if (!_.isFunction(method)) method = this[events[key]];
-        if (!method) continue;
-
-        var match = key.match(delegateEventSplitter);
-        var eventName = match[1], selector = match[2];
-        method = _.bind(method, this);
-        eventName += '.delegateEvents' + this.cid;
-        if (selector === '') {
-          this.$el.on(eventName, method);
-        } else {
-          this.$el.on(eventName, selector, method);
-        }
+      if (delegate !== false) {
+        this.delegateEvents();
       }
       return this;
     },
 
+     delegateEvents: function(events) {
+      var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+      for (var key in events) {
+        var method = events[key];
+        if (!_.isFunction(method)) {
+          method = this[events[key]];
+        }
+        var match = key.match(delegateEventSplitter);
+        var eventName = match[1];
+        var select = match[2];
+        method = _.bind(method, this);
+        if (select === '') {
+          this.$el.bind(eventName, method);
+        } else {
+          this.$el.bind(eventName, select, method);
+        }
+      }
+      return this;
+    }
 });
