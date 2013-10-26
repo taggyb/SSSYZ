@@ -2,9 +2,9 @@ var View = Cactus.View = function(options) {
     if(!options){
     	options = {};
     }
-    this.el = options["el"];
-    this.events = options["events"];
-    this.model = options["model"] || {};
+    this.el = options.el;
+    this.events = options.events;
+    this.model = options.model || {};
     this.initialize.apply(this, arguments);
   }
 
