@@ -1,4 +1,4 @@
-// Backbone.History
+// Cactus.History
   // ----------------
 
   // Handles cross-browser history management, based on either
@@ -6,7 +6,7 @@
   // [onhashchange](https://developer.mozilla.org/en-US/docs/DOM/window.onhashchange)
   // and URL fragments. If the browser supports neither (old IE, natch),
   // falls back to polling.
-  var History = Backbone.History = function() {
+  var History = Cactus.History = function() {
     this.handlers = [];
     _.bindAll(this, 'checkUrl');
 
@@ -32,7 +32,7 @@
   // Has the history handling already been started?
   History.started = false;
 
-  // Set up all inheritable **Backbone.History** properties and methods.
+  // Set up all inheritable **Cactus.History** properties and methods.
   _.extend(History.prototype, Events, {
 
     // The default interval to poll for hash changes, if necessary, is
@@ -64,7 +64,7 @@
     // Start the hash change handling, returning `true` if the current URL matches
     // an existing route, and `false` otherwise.
     start: function(options) {
-      if (History.started) throw new Error("Backbone.history has already been started");
+      if (History.started) throw new Error("Cactus.history has already been started");
       History.started = true;
 
       // Figure out the initial configuration. Do we need an iframe?
@@ -75,18 +75,15 @@
       this._wantsPushState  = !!this.options.pushState;
       this._hasPushState    = !!(this.options.pushState && this.history && this.history.pushState);
       var fragment          = this.getFragment();
-      var docMode           = document.documentMode;
-      var oldIE             = (isExplorer.exec(navigator.userAgent.toLowerCase()) && (!docMode || docMode <= 7));
-
       // Normalize root to always include a leading and trailing slash.
       this.root = ('/' + this.root + '/').replace(rootStripper, '/');
 
       // Depending on whether we're using pushState or hashes, and whether
       // 'onhashchange' is supported, determine how we check the URL state.
       if (this._hasPushState) {
-        Backbone.$(window).on('popstate', this.checkUrl);
-      } else if (this._wantsHashChange && ('onhashchange' in window) && !oldIE) {
-        Backbone.$(window).on('hashchange', this.checkUrl);
+        Cactus.$(window).on('popstate', this.checkUrl);
+      } else if (this._wantsHashChange && ('onhashchange' in window)) {
+        Cactus.$(window).on('hashchange', this.checkUrl);
       } else if (this._wantsHashChange) {
         this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
       }
