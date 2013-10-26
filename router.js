@@ -82,7 +82,7 @@ _bindRoutes: function() {
 
 //Convert a route string into a regular expression, suitable for matching against the current //location hash.
 
- _routeToRegExp: function(route) {
+_routeToRegExp: function(route) {
       route = route.replace(escapeRegExp, '\\$&')
                    .replace(optionalParam, '(?:$1)?')
                    .replace(namedParam, function(match, optional) {
