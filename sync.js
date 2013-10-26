@@ -5,30 +5,25 @@ var methods = {
     'delete': 'DELETE',
     'read':   'GET'
   };
-
 var type = methods[method];
-
 var params = { type: type, dataType: 'json'};
-
 if(!options){
 	options = {};
 }
 
-if(!options.url){
-	var modelURL = _.result(model, 'url');
-	if(!modelURL){}
-		throw new Error("Sync Error: url property not specified");
-	}
-	params.url = modelURL;
-}
-
-
-var isUpdate;
-if(method === 'create' || method === 'update')
-isUpdate = true;
-
-
-if(options.data == null && model && isUpdate){
+ if (!options.url) {
+ 		if(_.result(model, 'url'))
+      params.url = _.result(model, 'url') 
+        else
+        params.url = function(){
+        throw new Error("Sync Error: url property not specified")
+        }
+    }
+    
+  switch(method){
+  case 'create':
+  case 'update':
+  if(options.data == null && model){
 	params.contentType = 'application/json';
 	var dataSync;
 	if(options.attrs){
@@ -38,21 +33,18 @@ if(options.data == null && model && isUpdate){
 	dataSync = model.toJSON(options);
 	}
 	params.data = JSON.stringify(dataSync);
-}
+}	
+  case 'delete':
+  	params.processData = false;
+  	break;
+  }
 
-if (params.type !== 'GET') {
-      params.processData = false;
-    }
-
-//**For overriding AJAX options   
 options.xhr = Cactus.ajax(_.extend(params, options));
 var xhr = options.xhr;
 model.trigger('request', model, xhr, options);
 return xhr;
-//***
+};
 
-}; //end sync
-
- Cactus.ajax = function() {
+Cactus.ajax = function() {
     return Cactus.$.ajax.apply(Cactus.$, arguments);
   };
