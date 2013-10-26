@@ -4,12 +4,18 @@
 //route
 //navigate
 
-//Routers map faux-URLs to actions, and fire events when routes are matched. Creating a new //one sets its routes hash, if not set statically.
-
 var Router = Cactus.Router = function(options) {
-    options || (options = {});
-    if (options.routes) this.routes = options.routes;
-    this._bindRoutes();
+    if(!options){
+      options = {};
+    }
+    this.routes = options["routes"];
+    if(this.routes){          // bind routes
+      this.routes = _.result(this, 'routes');
+      var route, routes = _.keys(this.routes);
+      while ((route = routes.pop()) != null) {
+        this.route(route, this.routes[route]);
+      }
+    }
     this.initialize.apply(this, arguments);
 };
 
@@ -44,12 +50,12 @@ route: function(route, name, callback) {
       }
       if (!callback) callback = this[name];
       var router = this;
-      Backbone.history.route(route, function(fragment) {
+      Cactus.history.route(route, function(fragment) {
         var args = router._extractParameters(route, fragment);
         callback && callback.apply(router, args);
         router.trigger.apply(router, ['route:' + name].concat(args));
         router.trigger('route', name, args);
-        Backbone.history.trigger('route', router, name, args);
+        Cactus.history.trigger('route', router, name, args);
       });
       return this;
 },
@@ -58,25 +64,9 @@ route: function(route, name, callback) {
 //Simple proxy to Backbone.history to save a fragment into the history.
 
 navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
+      Cactus.history.navigate(fragment, options);
       return this;
 },
-
-
-//Bind all defined routes to Backbone.history. We have to reverse the order of the routes here to //support behavior where the most general routes can be defined at the bottom of the route map.
-
-_bindRoutes: function() {
-      if (!this.routes) return;
-      this.routes = _.result(this, 'routes');
-      var route, routes = _.keys(this.routes);
-      while ((route = routes.pop()) != null) {
-        this.route(route, this.routes[route]);
-      }
-},
-
-
-
-
 
 
 

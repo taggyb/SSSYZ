@@ -1,4 +1,4 @@
-Cactus.Events = {
+var Events = Cactus.Events = {
 
 	on: function(name, callback, context) {
       if (!callback){ 
@@ -78,3 +78,5 @@ Cactus.Events = {
       return this;
     },
 };
+
+  _.extend(Cactus, Events);
