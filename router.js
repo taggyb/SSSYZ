@@ -8,7 +8,7 @@ var Router = Cactus.Router = function(options) {
     if(!options){
       options = {};
     }
-    this.routes = options["routes"];
+    this.routes = options["routes"]; //this line might be wrong
     if(this.routes){ // bind routes
 //     _.result(object, property)
 //If the value of the named property is a function 
@@ -18,13 +18,15 @@ var Router = Cactus.Router = function(options) {
 //=> "crumpets"
 //_.result(object, 'stuff');
 //=> "nonsense"
-      this.routes = _.result(this, 'routes');
+
 //_.keys(object)
 //Retrieve all the names of the object's properties.
 //_.keys({one: 1, two: 2, three: 3});
 //=> ["one", "two", "three"]
-      var route, routes = _.keys(this.routes);
-      while ((route = routes.pop()) != null) {
+      var routes = _.keys(_.result(this, 'routes'));
+      
+      while (routes.length != 0) {
+        var route=routes.pop();
         this.route(route, this.routes[route]);
       }
     }
